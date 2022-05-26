@@ -15,8 +15,7 @@ public class ServerThread extends Thread {
 
     private int port = 0;
     private ServerSocket serverSocket = null;
-
-    // TODO: add local cache if aplicable
+    private HashMap<String, String> localCache = null;
 
     public ServerThread(int port) {
         this.port = port;
@@ -28,7 +27,7 @@ public class ServerThread extends Thread {
                 ioException.printStackTrace();
             }
         }
-        // TODO: initialize local cache if applicable
+        this.localCache = new HashMap<String, String>();
     }
 
     public void setPort(int port) {
@@ -47,13 +46,13 @@ public class ServerThread extends Thread {
         return serverSocket;
     }
 
-//    public synchronized void setData(String city, WeatherForecastInformation weatherForecastInformation) {
-//        this.data.put(city, weatherForecastInformation);
-//    }
-//
-//    public synchronized HashMap<String, WeatherForecastInformation> getData() {
-//        return data;
-//    }
+    public synchronized void setData(String key, String value) {
+        this.localCache.put(key, value);
+    }
+
+    public synchronized HashMap<String, String> getData() {
+        return this.localCache;
+    }
 
     @Override
     public void run() {

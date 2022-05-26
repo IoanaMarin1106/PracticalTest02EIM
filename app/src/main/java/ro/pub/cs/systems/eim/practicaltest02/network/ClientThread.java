@@ -15,16 +15,20 @@ public class ClientThread extends Thread {
 
     private String address;
     private int port;
-    private String clientInfo;
+    private String clientKey;
+    private String clientValue;
     private TextView resultTextView;
+    private String method;
 
     private Socket socket;
 
-    public ClientThread(String address, int port, String clientInfo, TextView resultTextView) {
+    public ClientThread(String address, int port, String clientKey, String clientValue, String method, TextView resultTextView) {
         this.address = address;
         this.port = port;
         this.resultTextView = resultTextView;
-        this.clientInfo = clientInfo;
+        this.clientValue = clientValue;
+        this.clientKey = clientKey;
+        this.method = method;
     }
 
     @Override
@@ -41,11 +45,12 @@ public class ClientThread extends Thread {
                 Log.e(Constants.TAG, "[CLIENT THREAD] Buffered Reader / Print Writer are null!");
                 return;
             }
-
-            // TODO: clientul trimite catre server ce date vrea sa obtina
-            // hint: printWriter.println(date)
-            printWriter.println(clientInfo);
+            
+            printWriter.println(clientKey);
             printWriter.flush();
+            printWriter.println(clientValue);
+            printWriter.flush();
+            printWriter.println(method);
 
             String information;
             while ((information = bufferedReader.readLine()) != null) {

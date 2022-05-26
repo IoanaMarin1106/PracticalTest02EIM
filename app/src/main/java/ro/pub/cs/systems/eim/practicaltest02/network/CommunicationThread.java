@@ -62,9 +62,10 @@ public class CommunicationThread extends Thread {
 
             // TODO: handle local cache or get information from server web and send it to the client
 
-            String result = "";
-            result = bufferedReader.readLine();
-            printWriter.println(result + " de la client");
+            String clientKey = bufferedReader.readLine();
+            String clientValue = bufferedReader.readLine();
+            String method = bufferedReader.readLine();
+            printWriter.println(clientValue + clientKey + method + " de la client");
             printWriter.flush();
 
         } catch (IOException ioException) {

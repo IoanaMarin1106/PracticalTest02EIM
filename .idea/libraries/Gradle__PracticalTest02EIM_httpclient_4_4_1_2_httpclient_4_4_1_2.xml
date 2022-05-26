@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: PracticalTest02EIM.httpclient-4.4.1.2.httpclient-4.4.1.2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/httpclient-4.4.1.2/httpclient-4.4.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

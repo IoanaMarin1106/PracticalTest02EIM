@@ -24,9 +24,11 @@ public class PracticalTest02MainActivity extends AppCompatActivity {
     // Client widgets
     private EditText clientAddressEditText = null;
     private EditText clientPortEditText = null;
-    private Button getClientInformationButton = null;
     private TextView resultTextView = null;
-    private EditText clientInformation = null;
+    private EditText clientKeyEditText = null;
+    private EditText clientValueEditText = null;
+    private Button putButton = null;
+    private Button getButton = null;
 
     // TODO: add information for the server
 
@@ -71,8 +73,8 @@ public class PracticalTest02MainActivity extends AppCompatActivity {
                 return;
             }
 
-            String clientInfo = clientInformation.getText().toString();
-            if (clientInfo == null || clientInfo.isEmpty()) {
+            String clientKey = clientKeyEditText.getText().toString();
+            if (clientKey == null || clientKey.isEmpty()) {
                 Toast.makeText(getApplicationContext(), "[MAIN ACTIVITY] Client information parameters should be filled!", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -80,11 +82,44 @@ public class PracticalTest02MainActivity extends AppCompatActivity {
             resultTextView.setText(Constants.EMPTY_STRING);
 
             clientThread = new ClientThread(
-                    clientAddress, Integer.parseInt(clientPort), clientInfo, resultTextView
+                    clientAddress, Integer.parseInt(clientPort), clientKey, "", "GET", resultTextView
             );
             clientThread.start();
         }
+    }
 
+    private PutInformationButtonClickListener putInformationButtonClickListener = new PutInformationButtonClickListener();
+    private class PutInformationButtonClickListener implements Button.OnClickListener {
+
+        @Override
+        public void onClick(View view) {
+            String clientAddress = clientAddressEditText.getText().toString();
+            String clientPort = clientPortEditText.getText().toString();
+            if (clientAddress == null || clientAddress.isEmpty()
+                    || clientPort == null || clientPort.isEmpty()) {
+                Toast.makeText(getApplicationContext(), "[MAIN ACTIVITY] Client connection parameters should be filled!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (serverThread == null || !serverThread.isAlive()) {
+                Toast.makeText(getApplicationContext(), "[MAIN ACTIVITY] There is no server to connect to!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String clientKey = clientKeyEditText.getText().toString();
+            String clientValue = clientValueEditText.getText().toString();
+            if (clientKey == null || clientKey.isEmpty() || clientValue == null || clientValue.isEmpty()) {
+                Toast.makeText(getApplicationContext(), "[MAIN ACTIVITY] Client information parameters should be filled!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            resultTextView.setText(Constants.EMPTY_STRING);
+
+            clientThread = new ClientThread(
+                    clientAddress, Integer.parseInt(clientPort), clientKey, clientValue, "POST", resultTextView
+            );
+            clientThread.start();
+        }
     }
 
     @Override
@@ -99,10 +134,16 @@ public class PracticalTest02MainActivity extends AppCompatActivity {
 
         clientAddressEditText = (EditText)findViewById(R.id.client_address_edit_text);
         clientPortEditText = (EditText)findViewById(R.id.client_port_edit_text);
-        getClientInformationButton = (Button)findViewById(R.id.get_client_information_button);
-        getClientInformationButton.setOnClickListener(getInformationButtonClickListener);
         resultTextView = (TextView)findViewById(R.id.result_text_view);
-        clientInformation = (EditText) findViewById(R.id.client_edit_text);
+        clientKeyEditText = (EditText) findViewById(R.id.client_key_edit_text);
+        clientValueEditText = (EditText) findViewById(R.id.client_value_edit_text);
+
+        getButton = (Button) findViewById(R.id.get_button);
+        getButton.setOnClickListener(getInformationButtonClickListener);
+
+        putButton = (Button) findViewById(R.id.put_button);
+        putButton.setOnClickListener(putInformationButtonClickListener);
+
     }
 
     @Override
