@@ -41,7 +41,7 @@ public class CommunicationThread extends Thread {
     private ServerThread serverThread;
     private Socket socket;
 
-    private String unixTimePut;
+    private static String unixTimePut;
 
     public CommunicationThread(ServerThread serverThread, Socket socket) {
         this.serverThread = serverThread;
@@ -88,12 +88,10 @@ public class CommunicationThread extends Thread {
                 try {
                     // Daca timpul e mai mare de un minut, se sterge cheia
                     String unixTime = content.getString("unixtime");
-                    if (Long.parseLong(unixTime) - Long.parseLong(this.unixTimePut) >= 60) {
+                    if (Integer.parseInt(unixTime) - Integer.parseInt(unixTimePut) >= 5) {
                         serverThread.getData().remove(clientKey);
                     }
 
-                    // Timpul la care s-a facut PUT
-                    System.out.println(unixTime);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -125,7 +123,7 @@ public class CommunicationThread extends Thread {
                 }
                 try {
                     String unixTime = content.getString("unixtime");
-                    this.unixTimePut = unixTime;
+                    unixTimePut = unixTime;
 
                     // Timpul la care s-a facut PUT
                     System.out.println(unixTime);
