@@ -41,6 +41,8 @@ public class CommunicationThread extends Thread {
     private ServerThread serverThread;
     private Socket socket;
 
+    private String unixTimePut;
+
     public CommunicationThread(ServerThread serverThread, Socket socket) {
         this.serverThread = serverThread;
         this.socket = socket;
@@ -68,13 +70,69 @@ public class CommunicationThread extends Thread {
             HashMap<String, String> data = serverThread.getData();
 
             if (method.equals("GET")) {
+                String pageSourceCode = "";
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(Constants.WEB_SERVICE_ADDRESS);
+                HttpResponse httpResponse = httpClient.execute(httpGet);
+                HttpEntity httpGetEntity = httpResponse.getEntity();
+                if (httpGetEntity != null) {
+                    pageSourceCode = EntityUtils.toString(httpGetEntity);
+                }
+
+                JSONObject content = null;
+                try {
+                    content = new JSONObject(pageSourceCode);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    // Daca timpul e mai mare de un minut, se sterge cheia
+                    String unixTime = content.getString("unixtime");
+                    if (Long.parseLong(unixTime) - Long.parseLong(this.unixTimePut) >= 60) {
+                        serverThread.getData().remove(clientKey);
+                    }
+
+                    // Timpul la care s-a facut PUT
+                    System.out.println(unixTime);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 Log.i(Constants.TAG, "[COMMUNICATION THREAD] GET value for key " + clientKey);
                 if (data.containsKey(clientKey)) {
                     printWriter.println("Value is: " + data.get(clientKey));
                     printWriter.flush();
+                } else {
+                    printWriter.println("Key does not exists.");
+                    printWriter.flush();
                 }
 
             } else if (method.equals("POST")) {
+                String pageSourceCode = "";
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(Constants.WEB_SERVICE_ADDRESS);
+                HttpResponse httpResponse = httpClient.execute(httpGet);
+                HttpEntity httpGetEntity = httpResponse.getEntity();
+                if (httpGetEntity != null) {
+                    pageSourceCode = EntityUtils.toString(httpGetEntity);
+                }
+
+                JSONObject content = null;
+                try {
+                    content = new JSONObject(pageSourceCode);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    String unixTime = content.getString("unixtime");
+                    this.unixTimePut = unixTime;
+
+                    // Timpul la care s-a facut PUT
+                    System.out.println(unixTime);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 Log.i(Constants.TAG, "[COMMUNICATION THREAD] PUT value in local cache: key " + clientKey + " value " + clientValue);
                 serverThread.setData(clientKey, clientValue);
             }
