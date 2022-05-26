@@ -1,6 +1,7 @@
 package ro.pub.cs.systems.eim.practicaltest02.network;
 
 import android.util.Log;
+import android.webkit.HttpAuthHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,13 +61,23 @@ public class CommunicationThread extends Thread {
             }
             Log.i(Constants.TAG, "[COMMUNICATION THREAD] Waiting for parameters from client (city / information type!");
 
-            // TODO: handle local cache or get information from server web and send it to the client
-
             String clientKey = bufferedReader.readLine();
             String clientValue = bufferedReader.readLine();
             String method = bufferedReader.readLine();
-            printWriter.println(clientValue + clientKey + method + " de la client");
-            printWriter.flush();
+
+            HashMap<String, String> data = serverThread.getData();
+
+            if (method.equals("GET")) {
+                Log.i(Constants.TAG, "[COMMUNICATION THREAD] GET value for key " + clientKey);
+                if (data.containsKey(clientKey)) {
+                    printWriter.println("Value is: " + data.get(clientKey));
+                    printWriter.flush();
+                }
+
+            } else if (method.equals("POST")) {
+                Log.i(Constants.TAG, "[COMMUNICATION THREAD] PUT value in local cache: key " + clientKey + " value " + clientValue);
+                serverThread.setData(clientKey, clientValue);
+            }
 
         } catch (IOException ioException) {
             Log.e(Constants.TAG, "[COMMUNICATION THREAD] An exception has occurred: " + ioException.getMessage());

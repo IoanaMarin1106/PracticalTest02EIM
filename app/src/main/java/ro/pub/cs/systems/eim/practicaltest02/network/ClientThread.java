@@ -45,15 +45,17 @@ public class ClientThread extends Thread {
                 Log.e(Constants.TAG, "[CLIENT THREAD] Buffered Reader / Print Writer are null!");
                 return;
             }
-            
+
             printWriter.println(clientKey);
             printWriter.flush();
             printWriter.println(clientValue);
             printWriter.flush();
             printWriter.println(method);
+            printWriter.flush();
 
             String information;
             while ((information = bufferedReader.readLine()) != null) {
+                System.out.println(information);
                 final String finalizedInformation = information;
                 resultTextView.post(new Runnable() {
                    @Override
